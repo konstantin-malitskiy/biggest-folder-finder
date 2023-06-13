@@ -14,7 +14,10 @@ public class Main {
         FolderSizeCalculator calculator = new FolderSizeCalculator(file);
         ForkJoinPool pool = new ForkJoinPool();
         long size = pool.invoke(calculator);
-        System.out.println(size);
+        System.out.println(size + " - " +
+                getHumanReadableSize(size) + " -- " +
+                getSizeFromHumanReadable(
+                        getHumanReadableSize(size)));
         //System.out.println(getFolderSize(file));
 
         long duration = System.currentTimeMillis() - start;
@@ -32,4 +35,30 @@ public class Main {
         }
         return sum;
     }
+
+    //TODO: 24B, 234Kb, 36Mb, 34Gb, 42Tb
+    public static String getHumanReadableSize(long size) {
+        String[] unit = {"B", "Kb", "Mb", "Gb", "Tb"};
+        int i = 0;
+        while (size > 1024) {
+            size = size / 1024;
+            i++;
+        }
+        unit[i] = size + unit[i];
+        return unit[i];
+    }
+
+    //TODO: 24B, 234Kb, 36Mb, 34Gb, 42Tb
+    //TODO 24B, 234K, 36M, 34G, 42T
+    public static long getSizeFromHumanReadable(String size) {
+        String[] unit = {"B", "K", "M", "G", "T"};
+        long folderSize = Long.valueOf(size.replaceAll("[^0-9]", ""));
+        for (int i = 0; i <= 4; i++) {
+            if (size.contains(unit[i])){
+                return (long) (folderSize * Math.pow(1024, i));
+            }
+        }
+        return 0;
+    }
+
 }
